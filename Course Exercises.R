@@ -244,4 +244,42 @@ scaled * new.mat
 # linear algebra, inner matrix multiplication
 scaled %*% t(new.mat)
 
+# Video example
+matrix.mat <- matrix(c(171.5,292,281.6,460.6,139.3,288),nrow = 3,byrow = T, dimnames = list(c("The Matrix","Reloaded","Revolutions"),c("US","Worldwide")))
+# colSums(dataObject) calculates the column sums. Also see. rowSums()
+colSums(matrix.mat)
+# colMeans(dataObject) calculates the column means. Also see. rowMeans()
+colMeans(matrix.mat)
+# Udemy recommends adding the sums and means to the original data object
+totals <- colSums(matrix.mat)
+means <- colMeans(matrix.mat)
+matrix.prelim <- rbind(matrix.mat,totals,means)
+
+# Exercise 14 - more matrix operations
+# Create a matrix from a normal distribution
+mat.rnorm <- matrix(rnorm(25),nrow = 5)
+colTot <- colSums(mat.rnorm)
+colMeans <- colMeans(mat.rnorm)
+# add column sums and means to matrix
+mat.rnorm <- rbind(mat.rnorm, colTot, colMeans)
+# add row sums and means to matrix
+rowTot <- rowSums(mat.rnorm)
+rowMeans <- rowMeans(mat.rnorm)
+mat.rnorm <- cbind(mat.rnorm, rowTot, rowMeans)
+
+mat.runif <- matrix(runif(25),nrow = 5)
+colTot <- colSums(mat.runif)
+colMeans <- colMeans(mat.runif)
+# add column sums and means to matrix
+mat.runif <- rbind(mat.runif, colTot, colMeans)
+# add row sums and means to matrix
+rowTot <- rowSums(mat.runif)
+rowMeans <- rowMeans(mat.runif)
+mat.runif <- cbind(mat.runif, rowTot, rowMeans)
+
+#get min and max of each matrix
+rnorm.min <- min(mat.rnorm)
+rnorm.max <- max(mat.rnorm)
+runi.min <- min(mat.runif)
+runi.max <- max(mat.runif)
 
