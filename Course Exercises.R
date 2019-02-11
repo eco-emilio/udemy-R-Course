@@ -223,3 +223,25 @@ print(chess2[7,3])
 nums <- sample(1:100,size = 12)
 matrixA <- matrix(nums, nrow = 3, byrow = TRUE, dimnames=list(c("Row 1","Row 2","Row 3"),c("Col 1","Col 2", "Col 3","Col 4")))
 
+# Exercise 13 - more matrix stuff
+# use runif() to create a matrix
+rmatrix <- matrix(round(runif(12,1,100),0), nrow = 3, ncol = 4, dimnames = list(c("X","Y","Z"),c("uno", "dos", "tres", "cuatro")))
+# scale the matrix
+scaled <- rmatrix/10
+submatrix <- scaled[c("X","Y"), ]
+
+# extract 3x3 matric
+submatrix2 <- scaled[ ,-4]
+uno <- scaled[, "uno"]
+# you can only do matrix operations with two matrices when they are of the same size
+# R's recycling rules apply when you try to do an operation with a matrix and a vector
+# Use rnorm() to create a matrix
+# ?rnorm()
+new.mat <- matrix(round(rnorm(12,mean=10,sd=2.5),0), nrow = 3, byrow = TRUE)
+
+# element-wise matrix multiplication
+scaled * new.mat
+# linear algebra, inner matrix multiplication
+scaled %*% t(new.mat)
+
+
