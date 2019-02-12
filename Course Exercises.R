@@ -90,6 +90,9 @@ names(atk) <- NULL
 #Vectors - 3 most common attributes
 # Names, Dimensions, Class
 
+# Creating empty vectors
+vector.a <- vector(length=10)
+
 #Exercise 9 - Indexing and Slicing vectors
 atk <- c(3000L,NA,NA,NA,NA,4000L,3000L,5000L,1000L,5000L)
 atk[6]
@@ -399,9 +402,34 @@ if(wrongGuesses == 0){
    print("Mom did not win the lottery.")
 }
 
+# Loops - cycles - iterations
+# ie simulations
+# initiation - the instructions of the loop for the values passed to the loop
+# decision - the logical test to evaluate on the values passed to the loop
+# body - the R code to execute while the decision is true
+# for(value in x){
+#      y
+# }
+# words <- c("Word 1","Word 2","Word 3","Word 4","Word 5")
+# for (word in words){
+#      print("")
+# }
+# the 'for' loop creates a variable 'word' and sets the value to each incoming value one at a time
+# the variables created in the for loops can be named anything except existing environment variables
+# you can use the indexing variable to perform functions
+# vec.words <- vector(length=5)
+# for (i in 1:5){
+#      vec.words[i] <- words[i]
+# }
 
+# Exercise 18
+n <- 10
+sum <- 0
 
-
+for(i in 1:n){
+   sum <- sum + i
+   print(sum)
+} 
 
 
 
