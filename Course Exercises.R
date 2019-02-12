@@ -283,3 +283,26 @@ rnorm.max <- max(mat.rnorm)
 runi.min <- min(mat.runif)
 runi.max <- max(mat.runif)
 
+# Categorical and Factor data
+# Factors can specify the 1) Levels, 2) Labels *default is set to levels, 3) Order *default is false
+# function: factor(x = character(), levels, labels = levels, exclude = NA, ordered = is.ordered(x), nmax = NA)
+
+# Exercise 15 - Creating Factors in R
+# Requires chess matrix
+player <- c(rep("dark", 5), rep("light", 5))
+piece <- c("king", "queen", "pawn", "pawn", "knight", "bishop", "king", "rook", "pawn", "pawn")
+chess <- c(player, piece)
+dim(chess) <- c(10, 2)
+chess2 <- t(chess)
+turn <- c(3, 5, 2, 2, 7, 4, 6, 5, 2, 1)
+chess2 <- rbind(chess2, "Turn"=turn)
+rownames(chess2) <- c("Player", "Piece", "Turn")
+chess2 <- t(chess2)
+mat.pieces <- chess2[ ,"Piece"]
+# convert the vector of Pieces to a factor object with Unordered Levels
+mat.pieces <- factor(mat.pieces,levels=c("king","queen","rook","bishop","knight","pawn"),labels = c("King", "Queen", "Rook", "Bishop", "Knight", "Pawn"))
+# Change the Levels of the factor object
+levels(mat.pieces) <- c("K","Q","R","B","K","P")
+# Create a new factor with Ordered Levels
+mat.ordered <- factor(mat.pieces, ordered = TRUE, levels = c("K","Q","R","B","K","P"), labels = c("king","queen","rook","bishop","knight","pawn"))
+print(mat.ordered)
