@@ -306,3 +306,109 @@ levels(mat.pieces) <- c("K","Q","R","B","K","P")
 # Create a new factor with Ordered Levels
 mat.ordered <- factor(mat.pieces, ordered = TRUE, levels = c("K","Q","R","B","K","P"), labels = c("king","queen","rook","bishop","knight","pawn"))
 print(mat.ordered)
+
+# Lists
+# hierarchical structures or objects of different types
+# use function str(list_object) to see a compact summary of the list object
+# you can pass Labels to each object in the list by prefixing with intended label
+# List_Object <- list(Name="value", Name="value",Name=numeric, Name=list(Name="Value", Name="Value"))
+# - or - use the function names(List_Object) <- c("String","String","String","String")
+# - Prefered - double bracket notation List_Object[[2]][[3]] returns the object at that location
+
+# Programming
+# Relational operators == != < > <= >=
+# Evaluate to TRUE or FALSE
+# TRUE is evaluated as 1
+# FALSE is evaluated as 0
+# Logical Operators AND OR NOT
+# Allows you to combine multiple relational statements together
+# Does X meet condition Y AND condition X?
+# (w < 12) & (w >6)
+# & returns TRUE iff all values are TRUE
+# | returns TRUE if any value is TRUE
+# ! returns the opposite of a logical test
+
+# Vectors and logical operators
+# proceed element by element, which means you don't need loops to check values
+# v <- c(1,3,5,7)
+# w <- c(1,2,3,4)
+# 3 == v
+# FALSE TRUE FALSE FALSE
+# 3 == w
+# FALSE FALSE TRUE FALSE
+# c(11,12,13) >= c(10,12,14)
+# TRUE TRUE FALSE
+# (v >= 3) & (v < 7)
+# Returns 2 sets of 4 booleans and the '&' returns TRUE only when both are TRUE
+# [1] FALSE  TRUE  TRUE  TRUE
+# [2]  TRUE  TRUE  TRUE FALSE
+# [R] FALSE  TRUE  TRUE FALSE
+# (v >= 3) | (v < 7)
+# [1] FALSE  TRUE  TRUE  TRUE
+# [2]  TRUE  TRUE  TRUE FALSE
+# [R]  TRUE  TRUE  TRUE  TRUE
+# 
+# What is the difference between & and && and | and ||
+# single operators can return a vector of booleans
+# double operators return a single value
+((-2:2) >= 0) & ((-2:2) <= 0)
+# FALSE FALSE  TRUE FALSE FALSE
+((-2:2) >= 0) | ((-2:2) <= 0)
+# TRUE TRUE TRUE TRUE TRUE
+# Double operators (||, &&) return a single value
+((-2:2) >= 0) && ((-2:2) <= 0)
+# FALSE
+((-2:2) >= 0) || ((-2:2) <= 0)
+# TRUE
+
+# R Programming if / else / else if
+# if(A){
+#   Z
+# }
+# if(A){
+#  Z
+# }else{
+#  Y
+# }
+# the value passed to the if statement must be a single value and not a vector of values
+# because the statement must evaluate to TRUE or FALSE
+
+# Exercise 17
+x <- 101
+
+if((x >= 1) & (x < 60)){
+   print("Rotten!")
+} else if((x >= 60) & (x < 75)){
+   print("Fresh")
+} else if((x >= 75) & (x <= 100)){
+   print("Certified Fresh!")
+} else {
+   print("Please input a number between 1 and 100")
+}
+# setdiff - compares two vectors (sets) 
+# setdiff returns the values from the first set that do not match the second set
+# which means you can use setdiff to count how many of the elements in the vectors
+# don't match. 
+myinputs <- c(24,37,4,2,35,39)
+lottery <- sample(1:49,6,replace=F) 
+# wrongGuesses is the length of the vector returned by setdiff()
+wrongGuesses <- length(setdiff(lottery, myinputs))
+if(wrongGuesses == 0){
+   print("Mom won the lottery!")
+} else {
+   print("Mom did not win the lottery.")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
