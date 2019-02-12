@@ -226,6 +226,8 @@ print(chess2[7,3])
 nums <- sample(1:100,size = 12)
 matrixA <- matrix(nums, nrow = 3, byrow = TRUE, dimnames=list(c("Row 1","Row 2","Row 3"),c("Col 1","Col 2", "Col 3","Col 4")))
 
+matrixB <- matrix(rep(c("item 1","item 2","item 3","item 4","item 5"), 3),ncol = 1)
+
 # Exercise 13 - more matrix stuff
 # use runif() to create a matrix
 rmatrix <- matrix(round(runif(12,1,100),0), nrow = 3, ncol = 4, dimnames = list(c("X","Y","Z"),c("uno", "dos", "tres", "cuatro")))
@@ -431,8 +433,56 @@ for(i in 1:n){
    print(sum)
 } 
 
+# while loop - loops while it evaluates to TRUE. 
+# Useful for when you have an unknown number of iterations
+# add a piece of code within the body of the loop to change the internal variable so that 
+# it eventually evaluates to FALSE
+n <- -12
+while (n < 0){
+   print(paste("The current value is:",n))
+   n <- n + 1
+}
 
+# repeat loop - evaluates the logical condition after the body code
+# used when the answer you're looking for breaks the loop
+# ensures the body is executed at least once
+# must ensure there is a 'break' command within the body code
+# 'break' can be used within all loop mechanisms
 
+n <- -12
+repeat{
+   print("Some text")
+   n <- n + 1
+   if(n >= 0){
+      print("Some functions")
+      print("Some more stuff before break")
+      break
+   }
+}
+
+# More on Functions
+# Defining arguments in functions
+# my.fx <- function(variable){
+#    internal.varaible <- sample(variable, size=3, replace=T)
+#    print(internal.variable)
+# }
+
+# shuffle <- function(deck){
+#   generate random sequence from 1 to 23 
+#   random.card <- sample(1:23, size=23)
+#   use the sequence to pull cards from incoming data
+#   shuffled <- deck[random.card, , drop=FALSE]
+# }
+
+# scope - local versus global
+# variables created with a function are local to the function and not global
+# you must return values from functions to the global environment to access them
+# return()
+#
+# ensure there are default variables within functions to prevent error messages
+# deal <- function(deck = matrix(1:23, nrow=23)){ body code }
+
+# Exercise 19
 
 
 
