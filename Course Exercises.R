@@ -482,11 +482,553 @@ repeat{
 # ensure there are default variables within functions to prevent error messages
 # deal <- function(deck = matrix(1:23, nrow=23)){ body code }
 
+# Data Frames
+# Vectors and Matrices can only store a single data type and uses coersion to enforce that
+# Real world data is often combinations of data types
+# Lists are cumbersome to work with for statistical purposes and for ease of use 
+# Data Frames act like spreadsheets and can hold different data types 
+# NB: must have a single data type within each column. Whereas a row can contain different data types
+# NB: Vectors of equal length are required when creating data frames
+# NB: vectors passed to data frame become columns with Labels = vector_name
+# NB: data frames coerse strings to factors. Turn that off with stringsAsFactors=FALSE
+# NB: Use names() to pass a vector of names to use
+
+my.data <- data.frame(vector1,vector2,vector3, vector4)
+# - or -
+my.data <- data.frame(Column1=vector1,Column2=vector2,Column3=vector3,Column4=vector4)
+names(my.data) <- c("Column Label 1","Column Label 2","Column Label 3","Column Label 4")
+
+# explore your data frame
+str(my.data)
+
 # Exercise 19
+name <- c("Flipper", "Bromley", "Nox", "Orion", "Dagger", "Zizi", "Carrie")
+mo <- c(53, 19, 34, 41, 84, 140, 109)
+size <- c("medium", "small", "medium", "large", "small", "extra small", "large")
+weight <- c(21, 8, 4, 6, 7, 2, 36)
+breed <- c("dog", "dog", "cat", "cat", "dog", "cat", "dog")
+
+pets <- data.frame(mo, size, weight, breed)
+names(pets) <- c("Months old", "Size", "Weight", "Breed")
+rownames(pets) <- name
+str(pets)
+# the levels() allows you to easily recode factors in your data, not just the label
+# but the values in the column as well
+levels(pets[ ,"Breed"]) <- c("dog","cat")
+pets[ ,"Breed"]
+
+# Tidyverse package
+install.packages("tidyverse")
+
+# Import data into R Studio sessions
+# read.table("file.name", sep=, header=, stringsAsFactors= )
+my.pok <- read.table("pokRdex-comma.csv",
+                     sep = ',',
+                     header = TRUE,
+                     stringsAsFactors = FALSE)
+
+# shortcut function to load csv files
+# read.csv("file.name", stringsAsFactors=)
+# NB: headers defaults to TRUE
+# NB: sep defaults to ','
+# NB: skip = n tells function number of lines to skip before reading data
+# NB: nrows = n tells function how many rows to read, not including the HEADER row
+
+my.pok <- read.csv("pokRdex-comma.csv",
+                     stringsAsFactors = FALSE)
+
+# shortcut function to load tab delimited files
+# read.delim("file.name", stringsAsFactors=)
+# NB: headers defaults to TRUE
+# NB: sep defaults to '\t'
+my.pok <- read.delim("pokRdex-tab.txt",
+                   stringsAsFactors = FALSE)
+
+# shortcut function to load csv files where semi-colon is separator
+# read.csv2("file.name", stringsAsFactors=)
+# NB: headers defaults to TRUE
+# NB: sep defaults to ';'
+
+# Exporting data
+# write.csv(data, file="the_filename.csv", row.names=FALSE)
+# NB: set row.names=FALSE 99.99999999% of the time
+# write.table()
+
+# Exercise 20
+# in the raw data file, the first 23 lines contain documentation not relevant to data import
+# the data file is large, so only read 200 employees data
+employee.data <- read.csv("employee-data.csv", skip = 23, nrow = 200, stringsAsFactors = FALSE)
+names(employee.data) <- c("Employee number", "First name", "Last name", "Birth date", "Gender", 
+                          "Job title", "Salary", "From date", "To date")
+write.csv(employee.data, file = "employee-exercise.csv", row.names = FALSE)
+
+# Get a sense of your data
+# 8 most common functions to get descriptive information about your data
+# 1) nrow(...), 2) ncol(...), 3) colnames(...), 4) rownames(...), 5) str(...), 6) summary(...)
+# 7) head(...), and 8) tail(...)
+# NB: str(...) prvides an overview of the structure of the data frame
+# NB: summary(...) provides descriptive statistics on each variable/column that contains numbers
+# NB: head(...) grabs the first 6 rows
+# NB: tail(...) grabs the last 6 rows
+
+nrow(my.pok)
+# [1] 811
+ncol(my.pok)
+# [1] 28
+colnames(my.pok)
+#  [1] "id"                      "pokemon"                 "species_id"             
+#  [4] "height"                  "weight"                  "base_experience"        
+#  [7] "type_1"                  "type_2"                  "attack"                 
+#  [10] "defense"                 "hp"                      "special_attack"         
+#  [13] "special_defense"         "speed"                   "ability_1"              
+#  [16] "ability_2"               "ability_hidden"          "color_1"                
+#  [19] "color_2"                 "color_f"                 "egg_group_1"            
+#  [22] "egg_group_2"             "url_image"               "generation_id"          
+#  [25] "evolves_from_species_id" "evolution_chain_id"      "shape_id"               
+#  [28] "shape"  
+
+str(my.pok)
+
+summary(my.pok)
+
+# Indexing and Slicing data frame
+library(tidyverse)
+
+# read data set into data frame
+my.starwars <- as.data.frame(starwars)
+# remove the last 3 columns from the data frame
+my.starwars <- my.starwars[ ,-(11:13)]
+
+head(my.starwars) # grab the first 6 rows
+tail(my.starwars) # grab the last 6 rows
+
+# Indexing and subsetting data frames
+# returns atomic data type
+my.starwars[3,9] # returns whatever data type is stored at the index
+# chr "Naboo"
+my.starwars[3, "homeworld"]
+my.starwars[11,3] # returns whatever data type is stored at the index
+# num 84
+
+# returns vector
+my.starwars[ ,"name"] # returns a vector
+my.starwars[["name"]] # returns a vector
+my.starwars$name # returns a vector
+
+# returns data frame
+my.starwars["name"] # returns a data frame
+my.starwars[5 , ] # returns a data frame
+my.starwars[c(1:14),c("name","homeworld","species")] # returns a data frame
+
+# Extending a data frame
+# Add a variable/column
+mark <- c(37.5,34.75,34.25,0,0,0.75,0)
+carrie <- c(13.5,22.75,21.25,0,0,0.5,5.74)
+# Method 1 - use $
+my.starwars$MarkScreenTime <- mark
+my.starwars$CarrieScreenTime <- carrie
+# Method 2 - use [[]]
+my.starwars[[MarkScreenTime]] <- mark
+my.starwars[[CarrieScreenTime]] <- carrie
+# Method 3 - cbind() recommended when more than 1 variable is added
+my.starwars <- cbind(my.starwars, MarkScreenTime=mark, CarrierScreenTime=carrie)
+
+# Remove a variable/column
+my.starwars$MarkScreenTime <- NULL
+my.starwars[[MarkScreenTime]] <- NULL
+
+# Add observation
+# Create a 1 row data frame properly 
+# NB: must ensure columns are named to match the target data frame
+rogueOne <- data.frame(Title="The Title", Year=2016, Length=133, Gross=1051, MarkScreenTime=0, CarrieScreenTime=0.25) 
+# Use rbind(...) to add it 
+rbind(my.starwars,rogueOne)
+
+# Exercise 20
+# add a new variable to pets data frame
+vaccinated <- c("Yes", "Yes", "No", "Yes", "No", "No", "Yes")
+petsv <- cbind(pets, "Vaccinated" = vaccinated)
+#add an observation to the data frame
+milo <- data.frame(row.names = "Milo", Months.old = 67, Size = "small", Weight = 7, Breed = "dog", Vaccinated = "Yes")
+petsvm <- rbind(petsv, milo)
+
+ncol(petsvm)
+nrow(petsvm)
+colnames(petsvm)
+rownames(petsvm)
+str(petsvm)          # two numeric and three factor variables
+
+class(diamonds)
+# alternatively
+str(diamonds)
+diamonds.df <- as.data.frame(diamonds)
+class(diamonds.df)
+
+str(USJudgeRatings)
+my.df <- USJudgeRatings
+# create a new column and store it in the data frame
+my.df$AVRG <- rowMeans(my.df)
+# pull the column out of the data frame and pass it to a new one
+avrg <- my.df["AVRG"]
+
+# Missing Data
+# display as 'NA'
+# na.rm = TRUEjust ignores NAs, not recommended
+# Where are the NA values?
+
+is.na(my.starwars) # TRUE if value is NA, returns a data frame of TRUE/FALSE
+any(is.na(my.starwars)) # TRUE if any values are NA, returns a single TRUE/FALSE
+
+any(is.na(my.starwars[ ,c("name","homeworld","species")])) # subset of columns
+
+# Method 1 - element by element replace 'NA' with a static value
+my.starwars$species[is.na(my.starwars$species)] <- "Unknown"
+subset(my.starwars, species == "Unknown")
+
+# Method 2 - element by element replace 'NA' with a function return ie. median
+my.starwars$height[is.na(my.starwars$height)] <- median(my.starwars, na.rm = T)
+
+# data transformation
+# dplyr within tidyverse
+library(tidyverse)
+# starwars is a Tibble, not a data frame
+# Tibbles are more advanced and limit print to console 
+star <- starwars
+star
+
+view(star) # view all data
+
+# Filter(data, criterion) can use single logical operators & | !
+filter(star, species == "Droid")
+filter(star, species == "Droid", homeworld == "Tatooine")
+filter(star, eye_color == "red" | eye_color == "yellow" | eye_color == "orange", specied == "Human")
+
+# select() allows you select which variables you want and the order they appear
+# starts_with() / ends_with() / contains() / matches () / everything()
+select(star, name, birth_year, homeworld, species, starships)
+select(star, name, homeworld:starships)
+select(star, ends_with("color"))
+
+# move columns around
+select(star, name, vehicles, starships, everything())
+
+# mutate - create new variables from existing variables AND add to data frame
+star <- mutate(star, bmi=mass/((height/100)^2))
+
+# transmute - create only the new variable and remove everything else
+star.bmi <- transmute(star, bmi2 = mass/((height/100)^2))
+
+# Arrange data - column-wise sorting
+arrange(star, desc(mass))
+
+# Group data and then summarize
+summarize(star, avg,height = mean(height), na.rm = T) # returns a single value across all data
+
+# group_by() - use group_by(...) first to segment data into meaningful groups
+star.species <- group_by(star, species)
+summarize(star, avg,height = mean(height), na.rm = T) # returns values for each group
+
+# Sampling with dplyr
+# sample_n(...) - a fixed number of rows / sample_frac(...) a fixed fraction of rows
+# NB: by default, sampling does not return values once sampled
+# NB: use replace = TRUE if you want to return the value to the data set
+# NB: replace = TRUE is called bootstrapping and is useful for calculating standard error & intervals
+sample_n(star, 10) # sample 10 rows from data set
+sample_frac(star, 0.1) # sample 10/100 of the rows from the data set
+
+# the pipe operator - %>%
+# data %>% operation 1 %>% operation 2 %>% operation 3
+# used to simplify the code and be easier to read than nesting. While nesting is a valid approach
+# nesting can be hard to read and decipher. pipe allows us to type the operations in the way
+# we think about the order of the operations
+
+star %>% 
+   group_by(species) %>%
+   summarise(count = n(), mass = mean(mass, na.rm = T)) %>%
+   filter(count > 1)
 
 
+# Exercise 21
+# import data
+employee.data <- read.csv("employee-data.csv", skip = 23, stringsAsFactors = FALSE)
+# convert data frame to tibble
+employee.data <- as_tibble(employee.data)
+# convert variables to factors
+employee.data$gender <- as.factor(employee.data$gender)
+employee.data$title <- as.factor(employee.data$title)
 
+# check to see if there is any NA values in your data
+any(is.na(employee.data))
 
+# select keeps the variables you specify and the order
+# filter returns a subset of data (salary < 70000)
+# arrange sorts the variables (sort by gender and within gender sort by last name)
+employee.a <- employee.data %>% 
+   select(ends_with("name"), gender, everything()) %>%
+   filter(salary >= 70000) %>% 
+   arrange(gender, last_name)
 
+good.earners <- employee.a["emp_no"]
 
+# group the data by title and gender
+# calculate average yearly salary for all employees in each group
+# calculate monthly salary and add new variable to the tribble
+# sort the data frame by gender with salaries descending
+employee.b <- employee.data %>% 
+   group_by(title, gender) %>% 
+   summarise(avg.salary = mean(salary)) %>% 
+   mutate(monthly = avg.salary/12) %>% 
+   arrange(gender, desc(monthly))
+
+# Tidy data
+# consistently organized data
+# data cleaning
+# tidyr package gather() / spread() / unite() / separate()
+library(tidyverse)
+# number of plays/downloads of songs by artists for a number of weeks
+billboard <- read.csv("billboard.csv")
+billboard <- as_tribble(billboard)
+
+# common issues with raw data
+# 1) values as column names. 
+# you can convert columns to rows by creating a new column
+billboard %>% 
+   gather(x1st.week:x76th.week, key = "week", value = "rank", na.rm = T) %>%
+   arrange(artist.inverted)
+
+# 2) multiple variables in the same column
+tb <- read.csv("tb.csv")
+tb <- as.tibble(tb)
+# in the raw data set, age and sex are combined into columns eg., "males 15-24", "males 25-34"
+# use gather() to recode the data set so that each value is in separate columns, gender / age group
+tb.gathered <- tb %>% gather(m.014:f.65, key = "new_column_name", value = "cases", na.rm = T) %>%
+   arrange(country)
+tb.gathered # shows that the new column contains two variables, gender and age so we need to split
+
+# use separate() to split data 
+tb.separated <- tb.gathered %>% separate(column_to_split, into = c("sex","age"))
+
+# use unite() to merge columns. 
+# NB: default separator character is "_"
+tb.united <- tb.separated %>% unite("new_column_name", c("col1","col2"))
+
+# spread() inverse of gather()
+# some data sets have multiple rows to store data about the same thing. Like a min and max
+# it is better to use multiple columns, so use spread()
+weather <- read.csv("weather.csv")
+weather <- as_tibble(weather)
+weather.spread <- spread(weather, key = element, value = value)
+
+# Exercise 21
+# parse_number() # pulls out a number from with a string eg, TT55OBS -> 55
+# str_replace() # a regular expression function to replace strings via patterns with strings
+# str_replace_na() # replace missing values with NA
+
+# When reading complex data, ensure you set stringAsFactors = FALSE to preserve strings
+weather.untidy <- read.csv("weather-untidy.csv", stringsAsFactors = FALSE)
+weather.untidy <- as_tibble(weather.untidy)
+
+# Step 1 - convert multiple date variables/column into a single ordinal date variable (1-31)
+# NB: the gather(...) function needs to do something with the column assignment AND the value
+# located at the index within each column. Hence why you create two variables with gather(...)
+weather.g1 <- weather.untidy %>% gather("new category var", "value label", d1:d31, na.rm = TRUE)
+weather.g2 <- weather.untidy %>% gather(key = day, value = value, d1:d31, na.rm = TRUE)
+# Step 2 - convert date strings ('d1') to numbers then restructure the data then sort the data
+weather.clean <- weather.g %>% mutate(day = parse_number(day)) %>%
+   select(id, year, month, day, element, value) %>%
+   arrange(id, year, month, day)
+
+# Step 3 - spread the Min / Max rows into separate columns
+weather.final <- weather.clean %>% spread(element, value)
+
+# Tidying the tb data
+
+tb <- read.csv("tb-untidy.csv", stringsAsFactors = FALSE)
+tb <- as.tibble(tb)
+
+# standardize the variable/column names for easier processing later
+names(tb) <- str_replace(names(tb), "new_sp_", "")
+names(tb) <- str_replace(names(tb), "m", "m.")
+names(tb) <- str_replace(names(tb), "f", "f.")
+
+# drop the variables/columns with no data
+# this is a dumb, brute force way to handle missing data, not applicable in all scenarios
+tb$m.04 <- NULL
+tb$m.514 <- NULL
+tb$f.04 <- NULL
+tb$f.514 <- NULL
+tb$m.u <- NULL 
+tb$f.u <- NULL
+
+# columns are used as categories, gather(...) them into 2 new variables then sort by country
+tb.a <- tb %>% gather(m.014:f.65, key = "column", value = "cases", na.rm = TRUE) %>% arrange(country)
+
+# the strings in the new column contain two values, sex and age. Use separate(...) to create two columns
+tb.b <- tb.a %>% separate(column, into = c("sex", "age"))
+
+# the numbers in date column need formatting. Add "-" between upper and lower limit
+tb.b$age <- str_replace_all(tb.b$age, "0", "0-")
+tb.b$age <- str_replace_all(tb.b$age, "15", "15-")
+tb.b$age <- str_replace_all(tb.b$age, "25", "25-")
+tb.b$age <- str_replace_all(tb.b$age, "35", "35-")
+tb.b$age <- str_replace_all(tb.b$age, "45", "45-")
+tb.b$age <- str_replace_all(tb.b$age, "55", "55-")
+tb.b$age <- str_replace_all(tb.b$age, "65", "65-100")
+
+# Data Visualization
+# grammar of graphics and the 7 layers of visualizations
+# ggplot2 package
+# a method to explore and a method to explain and persuade
+# 1) Data*
+# 2) Aesthetics*
+# 3) Geometries*
+# 4) Facets
+# 5) Stats
+# 6) Coordinates
+# 7) Themes
+hdi <- read.csv("hdi-cpi.csv", stringsAsFactors = FALSE)
+hdi <- as_tibble(hdi)
+
+# supply the first two required layers for ggplot()
+# No plot is produced
+sc <- ggplot(hdi, aes(CPI.2015,HDI.2015))
+
+# add the default geometry layer
+sc + geom_point()
+
+# Facets require discrete variables like factors
+sc + geom_point() + facet_grid(Region ~.)
+
+# Add some color and the Stats layer
+sc + geom_point(aes(color=Region), size = 2) + facet_grid(Region ~.) + stat_smooth()
+
+# Set the Coordinates layer of the graph. Use to focus on specific locations of the data
+sc + geom_point(aes(color=Region), size = 2) + facet_grid(Region ~.) + stat_smooth() + coord_cartesian(xlim = c(0.75,1))
+
+# Apply Themes layer. Load the ggplot themes package for more.
+sc + geom_point(aes(color=Region), size = 2) + stat_smooth() + theme_minimal()
+
+# Types of Data & Measurement levels
+# Categorical / Numerical
+# Numeric - discrete vs continuous
+# - discrete data has discrete units, like integers are countable
+# - continuous data allows observations to take on any value along with decimals
+# Types of variables
+# Nominal > Ordinal > Interval > Ratio
+# category assignment (no order) > 
+#  groups & categories (ordered) > 
+#   Numbers w/ (no true zero) > 
+#    Numbers with true 0
+
+# Histograms
+titanic <- read.csv("titanic.csv", stringsAsFactors = FALSE)
+titanic <- as_tibble(titanic)
+
+titanic$Survived <- as.factor(titanic$Survived)
+titanic$Pclass <- as.factor(titanic$Pclass)
+titanic$Sex <- as.factor(titanic$Sex)
+titanic$Embarked <- as.factor(titanic$Embarked)
+
+# Passanger age is only continuous variable
+hist <- ggplot(data = titanic, aes(x=Age))
+hist + geom_histogram()
+
+# Adjust the range of values that fall into each bin
+hist + geom_histogram(binwidth = 5)
+
+hist + geom_histogram(binwidth = 5, color="darkslategray", fill="darkslategray4", alpha=0.5) +
+   ggtitle("Age Distribution on the Titanic") +
+   labs(y="Number of Passangers", x="Age (years)")
+
+hist + geom_histogram(binwidth = 5, color="darkslategray", fill="darkslategray4", alpha=0.5) +
+   ggtitle("Age Distribution on the Titanic") +
+   labs(y="Number of Passangers", x="Age (years)") +
+   theme_minimal()
+
+# Exercise 22
+library(tidyverse)
+install.packages("ggthemes")
+library(ggthemes)
+
+emp <- read.csv("employee-data.csv", skip = 23, stringsAsFactors = FALSE)
+emp <- as.tibble(emp)
+
+# Perform proper data pre-processing before moving forward with visulations
+emp$gender <- as.factor(emp$gender)
+emp$title <- as.factor(emp$title)
+
+emp.a <- filter(emp, salary > 45000)
+
+# Data pre-processing complete.
+hist <- ggplot(emp.a, aes(salary))
+hist + geom_histogram(binwidth = 5000, color = "darkslategray",
+                      fill = "darkseagreen2", alpha = 0.7) +
+   labs(title = "Employee Salaries",
+        x = "Salary", y = "Number of employees") +
+   theme_solarized_2(light = FALSE, base_size = 15, base_family = "serif")
+
+# Bar Chart
+# Y - countable variable
+# X - categorical / nominal variable
+
+bar.chart <- ggplot(titanic, aes(x=Survived))
+bar.chart + geom_bar() + theme_economist() +
+   labs(y="Passanger Count", title="Survival Rate")
+
+# Use aesthetics to map variables onto other variables
+# Map the Sex variable onto the Survived Variable
+bar.chart <- ggplot(titanic, aes(x=Survived, fill=Sex))
+bar.chart + geom_bar() + theme_economist() +
+   labs(y="Passanger Count", title="Survival Rate")
+
+bar.chart <- ggplot(titanic, aes(x=Sex, fill=Survived))
+bar.chart + geom_bar() + theme_economist() +
+   labs(y="Passanger Count", x="Gender", title="Survival Rate")
+
+bar.chart <- ggplot(titanic, aes(x=Sex, fill=Survived))
+bar.chart + geom_bar() + theme_light() +
+   labs(y="Passanger Count", x="Gender", title="Survival Rate") +
+   facet_wrap(~Pclass)
+
+# ~ means 'by' (Sex ~ Pclass) means create facets based on sex and then by class
+bar.chart <- ggplot(titanic, aes(x=Sex, fill=Survived))
+bar.chart + geom_bar() + theme_light() +
+   labs(y="Passenger Count", x="Gender", title="Survival Rate") +
+   facet_wrap(Sex ~ Pclass)
+
+hist <- ggplot(data = titanic, aes(x = Age, fill = Survived))
+hist + geom_histogram(binwidth = 5, color = "white") +
+   labs(title = "Age Distribution",
+        x = "Age", y = "Number of Passenger") +
+   theme_light() +
+   facet_wrap(~ Sex) # must start with tilda ~ with just one variable
+
+# Exercise 23
+library(tidyverse)
+library(ggthemes)
+
+bar <- ggplot(emp.a, aes(title, fill = gender))
+bar + geom_bar() + theme_fivethirtyeight() + scale_fill_manual(values = c("chartreuse4", "darkorange")) +
+   labs(title = "Job Positions by Gender",
+        y = "Employee count",
+        x = "Job position")
+
+# theme_fivethirtyeight() does not allow us to name the x- and y-axis; you can change it to one that works
+# trying to pass the legend.position= argument into any available theme won't work; if you want to customise 
+# your theme beyond font type and size, you would need to create a theme for yourself with the theme() function;
+# it takes an abundance of arguments allowing you to modify virtually every aspect of your visualisation
+
+bar <- ggplot(emp.a, aes(gender, fill = title)) 
+bar + geom_bar() + theme_fivethirtyeight() + 
+   scale_fill_manual(values = c("magenta", "darkorange", "midnightblue","springgreen4", "brown1", "gold")) +
+   labs(title = "Job Positions by Gender")
+
+# The aes(x = gender, fill = title) mapping is a lot more difficult to read;
+
+# look up scale_fill_manual, and scale_color_manual functions
+# Can you set title and x and y axis names? Why? Try using a different theme. Can you do it now? 
+# What happens if you try to set the theme() argument legend.position = "right". Why do you think that is? 
+# Change the mappings so that gender is plotted and the bars are filled with position segmentation. 
+# Do you find this graph useful and easy to read? 
+# Perhaps the only thing it convinces us in is that the data has been simulated. 
 
