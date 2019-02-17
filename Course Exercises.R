@@ -1647,11 +1647,156 @@ ind.t.test
 # Regression analysis measures the effect of one variable on another variable, Cannot be stated reversed because the predictor variables causes some effect in the dependent variable. Is represented as the best fitting line in a set of data.
 
 # Geometrical Representation
-# 
+# the distance between the regression line and the actual observed value is called residual, and describes the error in the regression line
 
-# 
+college <- read_csv("regression-example.csv")
+describe(college)
+#     vars  n    mean     sd  median trimmed    mad    min     max  range  skew kurtosis    se
+# SAT    1 84 1845.27 104.53 1846.00 1845.28 123.80 1634.0 2050.00 416.00  0.04    -0.95 11.41
+# GPA    2 84    3.33   0.27    3.38    3.35   0.21    2.4    3.81   1.41 -1.06     1.60  0.03
+# sample sizes are equal and above 30
+# two very different numerical variables. SAT has no skew .:. relatively symmetrical. kurtosis -1, less probability in the tails than standard normal. GPA has a small negative skew, and a large kurtosis. This distribution might not well approximate a normal distribution.
+col.SAT <- ggplot(data=college, aes(x = college$SAT))
+col.GPA <- ggplot(data=college, aes(x = college$GPA))
+col.SAT + geom_histogram(binwidth = 5, color="darkslategray", fill="darkslategray4", alpha=0.5) +
+   ggtitle("Distribution of SAT Scores") +
+   labs(y="Frequency")
+col.GPA + geom_histogram(binwidth = .2, color="darkslategray", fill="darkslategray4", alpha=0.5) +
+   ggtitle("Distribution of SAT Scores") +
+   labs(y="Frequency")
+
+# Use lm() to generate linear regression model
+linmod <- lm(GPA ~ SAT, data = college)
+
+# Use a scatterplot with a best fit line to visualize Regression 
+ggplot(college, aes(SAT, GPA)) +
+   geom_point() +
+   theme_light() +
+   labs(x = "SAT Scores",
+        y = "GPA",
+        title="Scatterplot of Observations") +
+   stat_smooth(method = "lm", se = FALSE)
+
+summary(linmod)
+# Residuals:
+#    Min       1Q   Median       3Q      Max 
+# -0.71289 -0.12825  0.03256  0.11660  0.43957 
+
+# Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 0.2750403  0.4087394   0.673    0.503    
+# SAT         0.0016557  0.0002212   7.487  7.2e-11 ***
+#    ---
+#    Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 0.2106 on 82 degrees of freedom
+# Multiple R-squared:  0.406,	Adjusted R-squared:  0.3988 
+# F-statistic: 56.05 on 1 and 82 DF,  p-value: 7.2e-11
+
+# Interpreting the Regression Analysis table
+# Model Summary
+# Coefficient table
+# b0 = 0.275, b1 = 0.0017
+# Std error, the lower the better
+# t value reflects Null hypthesis, b = 0, does line pass through origin?
+# p-value < 0.5, p-value < 0.00001, SAT is significant variable for predicting GPA
+
+# Exercise 31
+### Load the libraries you will need 
+
+library(tidyverse) 
+library(psych) # good for descriptives, remember? 
+
+# this is an additional library I have included (I want to show you something super useful :))
+library(scales) # new package! we will use this to create a custom format when plotting the data
+
+### Load the data as a tibble (readr has a function that does this directly)
+
+data <- read_csv("real-estate-price-size-year-view.csv")
+
+### Get the descriptives for your data so you can understand what you're dealing with a little better
+
+describe(data) # get a sense of your data
+summary(data) # get a sense of your data
+
+### Explore the data and see if there are any interesting trends to consider
+
+point <- format_format(big.mark = " ", decimal.mark = ",", scientific = FALSE) # this helps us get rid of the scientific notation in the graph
+ggplot(data, aes(price, size)) + 
+   geom_point() +
+   theme_light() +
+   labs(x = "House price (in USD)",
+        y = "House size (in sq ft)",
+        title = "House pricing and size") +
+   scale_x_continuous(labels = point) + 
+   scale_y_continuous(labels = point) # this is where we tell ggplot2 to use the format we set up above (point)
+
+### Define the linear model 
+
+linmod <- lm(price~size, data = data)
+
+### Plot the regression line
+
+ggplot(data, aes(price, size)) + 
+   geom_point() +
+   theme_light() +
+   stat_smooth(method = "lm", se = FALSE) +
+   labs(x = "House price (in USD)",
+        y = "House size (in sq ft)",
+        title = "House pricing and size") +
+   scale_x_continuous(labels = point) + 
+   scale_y_continuous(labels = point) # this is where we tell ggplot2 to use the format we set up above (point)
 
 
+### Print the results of the model
+
+summary(linmod)
+### How many observations was the regression run on?
+# Call:
+#   lm(formula = price ~ size, data = data)
+
+# Residuals:
+#    Min     1Q Median     3Q    Max 
+# -73606 -27947  -2800  30590  91597 
+
+# Coefficients:
+#                Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)    101912.6    11919.3    8.55 1.68e-13 ***
+#    size           223.2       13.2   16.91  < 2e-16 ***
+#    ---
+#    Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+# Residual standard error: 39130 on 98 degrees of freedom
+# Multiple R-squared:  0.7447,	Adjusted R-squared:  0.7421 
+# F-statistic: 285.9 on 1 and 98 DF,  p-value: < 2.2e-16
+
+# 100. this is evident from the degrees of freedom (residual)
+# degrees of freedom (residual) is calculated based on the sample size (n) minus the number of parameters (k) being estimated minus 1
+# degrees of freedom (residual) = n - k - 1 
+# 98 = n - 1 - 1 
+# n = 100
 
 
+### What is the R-squared of this regression? What does it tell you?
+# Adjusted R-squared:  0.7421 - we only look at the adjusted R-squared because it is more reliabel.
+# the adjusted R-squared increases only if the new term improves the model more than would be expected by chance
+# it decreases when a predictor improves the model by less than expected by chance
+# The value tells us that this regression model explains a big part of the variablity in the model (~75%)
 
+# Size is indeed a statistically significant predictor of price. This is evident from the p-value of the t-statistic.
+
+### What is the regression equation associated with this regression model?
+
+# y-hat = 101912.6 + 223.2*x1 
+
+# Decomposition of Variability: SST, SSR, SSE
+# Based on ANOVA framework
+# Sum of Squares Total, variability in the data
+# Sum of Squares Regression, how well your line fits the data. If SSR=SST, perfect fit
+# Sum of Squares Error, difference between observed and predicted. the smaller the better.
+# Total Variability = Explained Variability (SSR) + Unexplained Variability (SSE)
+
+# R-Squared
+# SSR / SST - a relative measure 0 -> 1. 0 = no explanatory power, 1 = total explanation
+# Depends on number of models/variables
+# Measures the goodness of fit of your model
