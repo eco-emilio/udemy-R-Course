@@ -1032,3 +1032,626 @@ bar + geom_bar() + theme_fivethirtyeight() +
 # Do you find this graph useful and easy to read? 
 # Perhaps the only thing it convinces us in is that the data has been simulated. 
 
+# Box and Whisper plots
+# Grouped numerical data in terms of quartiles
+
+box.plot1 <- ggplot(titanic, aes(x = Survived, y = Age))
+box.plot1 + geom_boxplot() +
+   labs(title="Survival Rate on Titanic") +
+   theme_light()
+
+# the default interquartile range is set to 1.5. You can change it with
+# geom_boxplot(..., coef = "1.75")
+
+# geom_jitter() to overlay observation
+box.plot1 <- ggplot(titanic, aes(x = Survived, y = Age))
+box.plot1 + geom_boxplot() + geom_jitter(width = 0.2, aes(color = Sex)) +
+   labs(title="Survival Rate on Titanic") +
+   theme_light()
+
+# Outlier formatting
+box.plot1 <- ggplot(titanic, aes(x = Survived, y = Age))
+box.plot1 + geom_boxplot(outlier.colour = "red", outlier.shape = 4) + 
+   geom_jitter(width = 0.2, aes(color = Sex)) +
+   labs(title="Survival Rate on Titanic") +
+   theme_light()
+
+# Many boxplots look better horizontal
+box.plot1 <- ggplot(titanic, aes(x = Survived, y = Age))
+box.plot1 + geom_boxplot(outlier.colour = "red", outlier.shape = 4) + 
+   geom_jitter(width = 0.2, aes(color = Sex)) +
+   labs(title="Survival Rate on Titanic") +
+   theme_light() + coord_flip()
+
+# Exercise 24 Boxplot
+library(tidyverse)
+library(ggthemes)
+install.packages("wesanderson")
+library(wesanderson)
+
+emp <- read.csv("employee-data.csv", skip = 23, stringsAsFactors = FALSE)
+emp <- as.tibble(emp)
+emp$gender <- as.factor(emp$gender)
+emp$title <- as.factor(emp$title)
+
+emp.a <- filter(emp, salary > 45000)
+
+boxx <- ggplot(emp.a, aes(x = title, y = salary))
+my.bp <- boxx + geom_boxplot(outlier.color = "orangered1", outlier.shape = 3) +
+   geom_jitter(width = 0.2, aes(color = gender)) +
+   ggtitle("Salary distribution", subtitle = "based on position and gender") +
+   ylab("Salary") + xlab("Job position") + 
+   theme_economist_white() + 
+   theme(legend.position = "right", axis.text.x = element_text(angle = 90, hjust = 1)) +
+   coord_flip() # this can be added if the axis.text.x doesn't make sense to you; it's also easier to read
+
+my.bp + scale_color_manual(values=wes_palette(name = "Darjeeling", n = 2))
+
+# or
+
+my.bp + scale_color_brewer(palette="Set1")
+
+# the palette is part of the package which you should already have on your
+# machines because it comes with the tidyverse
+
+# Scatterplot - two numeric variables
+hdi <- read.csv("hdi-cpi.csv", stringsAsFactors = FALSE)
+hdi <- as_tibble(hdi)
+
+sp <- ggplot(hdi, aes(CPI.2015,HDI.2015))
+sp + geom_point(aes(color = Region)) + theme_light() +
+   labs(x = "Corruption Perception Index",
+        y = "Human Development Index",
+        title = "CPI AND HDI 2015")
+
+# NB: 0-25 built in shapes. 0-4 simple, 5-9 pointy, 10-14 look electrical, 15-19 filled platonic, 
+# NB: only shapes 21-25 support the "fill=" attribute
+
+# scale_shape_manual() : to change point shapes
+# scale_color_manual() : to change point colors
+# scale_size_manual() : to change the size of points
+# scale_shape_manual(values=c(3, 16, 17))+
+# scale_color_manual(values=c('#999999','#E69F00', '#56B4E9'))
+# c('#142459','#176BA0','#19AADE', '#1AC9E6', '#1AC9E6','#1DE4BD','#6DFDD2','#C7F9EE')) 
+# c('#29D66B','#7D3AC1','#AF4BCE', '#DB4CB2', '#EB548C','#EA7369','#F0A58F','#FCEAE6')) 
+# c('#820401','#CD2323','#DE542C', '#EF7E32', '#EE9A3A','#EABD38','#E7E34E','#F7F4BF')) 
+
+sp + geom_point(aes(color = Region), shape = 24, fill="white", size=2, stroke=1) + 
+   scale_color_manual(values=c('#7D3AC1','#AF4BCE', '#DB4CB2', '#EB548C','#EA7369','#F0A58F')) +
+   theme_light() +
+   labs(x = "Corruption Perception Index",
+        y = "Human Development Index",
+        title = "CPI AND HDI 2015")
+
+# ADD STATS layer
+# refer to ggplot2 cheatsheet for more stats layers
+sp + geom_point(aes(color = Region), shape = 24, fill="white", size=2, stroke=1) + 
+   scale_color_manual(values=c('#7D3AC1','#AF4BCE', '#DB4CB2', '#EB548C','#EA7369','#F0A58F')) +
+   theme_light() +
+   labs(x = "Corruption Perception Index",
+        y = "Human Development Index",
+        title = "CPI AND HDI 2015") +
+   stat_smooth(se=FALSE)
+
+# overly saturated scatterplots benefit from stat_density2d()
+
+sp + geom_point(aes(color = Region), shape = 24, fill="white", size=2, stroke=1) + 
+   scale_color_manual(values=c('#7D3AC1','#AF4BCE', '#DB4CB2', '#EB548C','#EA7369','#F0A58F')) +
+   theme_light() +
+   labs(x = "Corruption Perception Index",
+        y = "Human Development Index",
+        title = "CPI AND HDI 2015") +
+   stat_density2d(color="gray")
+
+
+# Statistics
+# Population (N) vs sample(n)
+# all possible observations N -> parameters
+# subset of observations n -> statistics
+# a truly random sample can be obtained when each observation is determined by chance and all observations are equally likely
+# a representative sample is a sample that accurately reflects the population
+
+# Mean, Median, Mode
+# Mean - sample average sum(n)/n
+# the sample mean is very sensitive to outliers
+# use mean() to calculate the mean 
+# the median is the central observation in the ranked observations
+# use median()
+# the mode is the most frequent observation in the sample
+# to identify the mode of a sample, 
+# 1) build a contingency table or crosstab table a contingency table, which contains the observations and the counts
+# contigency <- table(data)
+# 2) query the column with the highest count
+# names(contingency)[which(x==max(x))]
+# if there is no max(x) then there is no mode for the sample
+# NB: mode is not useful beyond 3
+
+# For large data sets, use the summary() function to get central tendancy in one command
+
+# measures of asymetry - skew
+# Positive or right skew - mean > median - data clusters more before mean and has a long trailing/right tail
+# the outliers are located in the right tail
+# Negative or left skew - mean < media - data clusters after mean and has a long leading/left tail
+# the outliers are located in the left tail
+# Zero skew - symmetrical mean = media
+
+col.1 <- c(1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4,5,5,7)
+col.2 <- c(1,1,2,2,3,3,3,4,4,4,4,4,5,5,5,6,6,7,7)
+col.3 <- c(1,2,3,3,4,4,4,5,5,5,5,6,6,6,6,6,6,7,7)
+
+df <- data_frame(col.1,col.2,col.3)
+
+pl.1 < ggplot(df, aes(x=col.1)) +
+   geom_histogram(binwidth=1, color="white", fill="red4") +
+   theme_light() + labs(title="Positive Skew")
+
+pl.2 < ggplot(df, aes(x=col.2)) +
+   geom_histogram(binwidth=1, color="white", fill="red4") +
+   theme_light() + labs(title="Zero Skew")
+
+pl.3 < ggplot(df, aes(x=col.3)) +
+   geom_histogram(binwidth=1, color="white", fill="red4") +
+   theme_light() + labs(title="Negative Skew")
+
+# Exercise 26
+# Load the two data sets into R: "skew_1.csv", and "skew_2.csv". 
+# Identify the skew of the data sets, both visually, and numerically. 
+# Try to interpret what you are seeing.
+
+### Visual examination of the skew
+
+sk1 <- read.csv("skew-1.csv")
+sk2 <- read.csv("skew-2.csv")
+
+skew1 <- ggplot(data = sk1, aes(x = `Dataset 1`))
+skew1 + geom_histogram(binwidth = 100,
+                       color = "darkslategray", 
+                       fill = "darkslategray4", 
+                       alpha = 0.5) +
+   theme_light()
+
+# The skew of this dataset is positive
+
+
+skew2 <- ggplot(data = sk2, aes(x = `Dataset 2`))
+skew2 + geom_histogram(binwidth = 100,
+                       color = "darkslategray", 
+                       fill = "darkslategray4", 
+                       alpha = 0.5) +
+   theme_light()
+
+# The skew of this dataset is negative
+
+### Numerical examination of the skew 
+
+library(psych)
+
+describe(sk1)
+#    vars  n   mean     sd median trimmed    mad min max range skew kurtosis    se
+# X1    1 30 370.03 263.96    339  346.25 275.02  48 870   822 0.57    -0.98 48.19
+describe(sk2)
+#    vars  n   mean     sd median trimmed    mad min max range  skew kurtosis    se
+# X1    1 30 603.73 240.54  654.5  612.88 196.44 119 995   876 -0.33    -0.75 43.92
+describe(col.2)
+#    vars  n mean  sd median trimmed  mad min max range skew kurtosis   se
+# X1    1 19    4 1.8      4       4 1.48   1   7     6    0       -1 0.41
+# Note: sometimes, using a graph to identify the skew can be misleading.	
+# The sk2 dataset has a relatively strong negative skew ( -0.33 ). 	
+# However, from a histogram with a few bins, you cannot clearly determine the skew.	
+# For best results, use a more precise measure of skewness, such as R's calculations, instead of a simple graph	
+
+# Measures of Variability
+# Variance - Stdnard Deviation - Coefficient of Variation / relative std. dev.
+# most often use sample formulas
+# recall that sample variance (squares the differences)^2 to eliminate negative values
+# taking the square root of the variance, produces the standard deviation sqrt(variance) = std.dev
+# the Coefficient of Variation is unitless and allows you to compare the variance of multiple variables
+# of different units of measurement. std.dev / mean
+
+# an efficient way to calculate central tendancy and variability of a data frame is to use
+# lappy() / sapply() / etc
+# sapply(data, mean)
+# sapply(data, var)
+# sapply(data, sd)
+# coef.var <- sapply(data, sd) / sapply(data, mean)
+
+# Covariance and correlation
+# explore the relationship between variables
+
+homes <- read.csv("landdata-states.csv", stringsAsFactors = FALSE)
+homes <- as_tibble(homes)
+
+homes %>% subset(Date == 2001.25) %>% ggplot(aes(y = Structure.Cost, 
+                                                 x = log(Land.Value))) +
+   geom_point() + theme_light() + labs(x = "Land Value (log)",
+                                       y = " Structure Cost (USD)",
+                                       title = "Relationship")
+
+# Covariance measures the amount of correlation between two variables
+# Covariance can be postive > 0 > negative
+# Covariance of 0 indicates the variables are independent
+# Covariance depends on the scale of the variables
+# Correlation Coefficient removes the scale, standardizes the covariance
+# Correlation Coeeficient = Covariance / product of the variance of each variable
+
+cor(homes$Structure.Cost, homes$Land.Value)
+# correlation ranges between -1 and 1
+# 1 - one variable explains the other variable, as one goes up, so does the other
+# 0 - no relationship, independent
+# -1 - perfect relationship but inverse, as one goes up, the other goes down
+
+cor.test(homes$Structure.Cost, homes$Land.Value)
+# t = 42.013, df = 7801, p-value < 2.2e-16
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#    0.4112874 0.4474795
+# sample estimates:
+#    cor 
+# 0.4295559 
+
+# Exercise 27
+# Task 1: What are the types of data and the levels of measurement of the following variables: Cust ID, Mortgage, Year of sale. 
+# Task 2: Create a histogram which represents the Price variable. Use the default binwidth values first and then set bins of length $100,000. Use the data on all apartments, no matter if sold or not.
+# Task 3: Interpret the results.
+# Task 4: Create a scatter plot showing the relationship between Price and Area. Use the data on all apartments, no matter if sold or not. Interpret the results.
+# Task 5: Calculate the mean, median, mode, skewness, and standard deviation of Price for all apartments, no matter if sold or not.
+# Task 6: Interpret the measures.
+# Task 7: Calculate the correlation between Price and Area. Is the result in line with the scatterplot?
+
+library(tidyverse)
+
+product <- read_csv("practical-product.csv")
+customer <- read_csv("practical-customer.csv")
+
+# Task 1
+
+# Cust ID - Categorical/Nominal. This variable has the same properties as ID.
+# Mortgage - Categorical/Nominal.	This is a Binary variable. Like a Yes/No question or Gender.
+# Year of sale - Numerical, discrete/Interval.	Year is a numerical variable. It is always discrete. The level of measurement is questionable, but we would treat it as interval, as the 0 year would be the time when the Big Bang happened. The current BC-AD calendar was arbitrary chosen (similarly to degrees Celsius and Fahrenheit).
+
+# Task 2 - start by visually inspecting the frequency distribution of the data
+# Use a historgram first to get a feel for the skewness. Is it positive or negative or symmetrical
+
+hg <- ggplot(data=product, aes(x = Price))
+
+hg + geom_histogram(color = "darkslategray", 
+                    fill = "darkslategray4", 
+                    alpha = 0.5) + 
+   ggtitle("House Prices Frequency Distribution") + 
+   labs(y = "Number of Houses", 
+        x = "Price") + 
+   theme_minimal() +
+   scale_x_continuous(labels = NULL) 
+
+hg + geom_histogram(binwidth = 100000, 
+                    color = "darkslategray", 
+                    fill = "darkslategray4", 
+                    alpha = 0.5) + 
+   ggtitle("House Prices Frequency Distribution") + 
+   labs(y = "Number of Houses", 
+        x = "Price") + 
+   theme_minimal() +
+   scale_x_continuous(labels = NULL) # this gets rid of the scientific notation on the x axis
+
+# Task 3
+
+# The two histograms point to similar insights - most of the apartment prices are concentrated in the interval ($217,000 to 317,000)	
+
+# Task 4 - choose a relationship to inspect. Look at the scatterplot between Price and Area
+# Does the correlation look positive or negative?
+# Does the correlation stay constant, ie., a cone
+
+sp <- ggplot(product, aes(`Area (ft.)`, Price))
+sp + geom_point() + 
+   theme_light() + 
+   labs(x = "Area in Square Feet", 
+        y = "Price in USD", 
+        title = "Relationship between Price and Area") +
+   scale_y_continuous(labels = NULL) # this gets rid of the scientific notation on the y axis
+
+# The scatter plot shows a very strong linear relationship between Price and Area. This was to be expected as often Real Estate companies price their property per square foot.	
+# Notice how for cheaper apartments (lower areas respectively), the points are closer so the variance is smaller. However, the bigger the apartment, the bigger the difference in the price.	
+
+# Task 5 
+# When performing exploratory data analysis, the psych package has useful tools
+library(psych)
+
+# either of these gives you a decent summary and the mean, median, skew, and standard deviation of the data of interest
+
+# describe() returns all descriptive statistics about a variable
+describe(product$Price)
+#    vars   n     mean       sd   median  trimmed      mad      min      max    range skew kurtosis   se
+# X1    1 267 281171.9 89119.12 249075.7 269244.3 65200.96 117564.1 538271.7 420707.7 1.08     0.38 5454
+
+# summary only provides measures of central tendancy, not variability or skew
+summary(product$Price)
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+# 117564  217553  249076  281172  326965  538272 
+
+# create a function that returns the mode
+mode <- function(x){ 
+   ta <- table(x) # creates a contingency table of all observations as columns and frequency counts
+   tam <- max(ta) # grab the max frequency count
+   if (all(ta == tam))
+      mod <- NA
+   else
+      if(is.numeric(x))
+         mod <- as.numeric(names(ta)[ta == tam])
+   else
+      mod <- names(ta)[ta == tam]
+   return(mod)
+}
+
+mode(product$Price)
+
+# Task 6
+
+# We will only comment on the skew, as it is a bit tougher. 
+# The skew is right (positive). This means that most aparments are relatively cheap with a tiny portion that is more expensive.														
+
+# Task 7
+
+cor.test(product$`Area (ft.)`, product$Price)
+# t = 50.118, df = 265, p-value < 2.2e-16
+# alternative hypothesis: true correlation is not equal to 0
+# 95 percent confidence interval:
+#    0.9381545 0.9613697
+# sample estimates:
+#    cor 
+# 0.9510874 
+# Yes, the result is in line with the scatter plot. The two variables are strongly correlated.
+
+# Inferential Statistics 
+# predict population values from sample data
+# Distributions
+# a histogram provides quick look at the distribution of a variable
+# Broadly, distributions are defined by a function that shows the possible values for a variable
+# and how often they occur
+# Normal Distribution - is continuous and cannot be represented by bins. The normal distribution
+# is symmetrically distributed around the mean.
+# in a more formal sense, the normal distribution describes how likely a score will occur
+# the probabilities of observations n/total 
+# Probability distributions
+# The standard normal distrubtion is a case of the normal distribution with mean = 0 and std = 1
+# when your data approximates a normal distribution you can convert your observations into a 
+# standard normal variable or a standardized variable called a z-score
+# z-score = ( original variable - mean ) / std.dev
+# once you have a z-score for your observation, you can look up the probability of that score in 
+# the standard normal probability table
+# Importantly, you use the probability of the z-score to assess whether the score came from a certain
+# type of probability distribution
+
+# Standard Error and Confidence Intervals
+# Each time you sample, you generate means/std that estimate the population parameter
+# If you keep taking samples, you produce a distribution of means and std called sampling distribution
+# as you approach infinity, the mean of the sampling distribution will reach the population average
+#
+# With one variable, you can calculate the variability of the observations within the sample
+# With the sampling distribution, you can calculate the variability of the sampling distribution
+
+# Sample Error = std.dev of the means
+# NB: with more than 30 observations (n>=30), you can reasonably assume that the sample mean is coming from the sampling distribution with a mean equal to the population mean
+# variance / sqrt(n)
+# Standard Error 1) if large, indicates our sample statistic may be far from the true population value, 2) if small, indicates our sample statistic is closer to the population value, a good estimation!
+
+# Thus, standard error tells us the level of certainty with which we can generalize from a sample to a population
+# From a decision-making context, the Standard Error tells us how certain we can be about drawing conclusions from our sample data.
+
+# Confidence Intervals - boundaries that designate a range of values that the population parameter is likely to fall. With one variable, it isn't that useful. In multivariate contexts it helps determine if there are significant difference between groups.
+# for example, a sample mean is 8. How likely does that mean come from the sampling distribution of the mean of the population your investigating
+# Step 1 - I want the range within which the true value of the parameter will be for a certain number of samples: 95% or 99%
+# Step 2 - If the range is large, it is uninformative because you are unsure where the population value is
+#          If the range is small, you can be much more confident that for 95% of the samples, the sample mean is a decent estimate of the population mean
+# visually represent the Confidence interval as well as the values to quickly gauge whether it is likely
+# to be significant or not. Only a p-value can tell you whether it is signficant or not
+
+# Hypothesis Testing
+# Steps in Data-driven decision-making
+# 1) Research Question 2) Generate Theory 3) Formulate Hypothesis 4) Find correct test 
+# 5) Execute test 6) Make a decision
+# 
+# True Hypotheses can be tested.
+# There are two hypotheses: 1) The alternative hypothesis, what we predict will be TRUE, 2) The Null Hypothesis, what we predict will be FALSE
+# We cannot prove the alternative hypothesis is TRUE, we can reject an hypothesis that the alternative hypothesis isn't true.
+# we are attempting to REJECT the Null hypothesis to support the alternative hypothesis.
+# How likely does our sample come from the Null sampling distribution vs the H1 sampling distribution
+# There are two kinds of hypotheses: 1) two-tailed (can be on either side) 2) one-tailed, in one direction
+# In a two-tailed, you don't care whether statistic is more or less than the sampling mean, just whether it's different
+# in a one tailed, your indicating the sample statistic must be in one tail or the other
+# it's important when interpreting regarding the area under the curve.
+# 3 components to hypothesis testing:
+# 1) Null to reject
+# 2) rejection region (one-tailed v two-tailed)
+# 3) significance level (alpha) - the signifcance level is the probability of rejecting the Null hypothesis if it true. (typical values are 0.01, 0.05, 0.1)
+# Example, student grades are not 70%. H0 = grades = 70%, H1 != 70%
+# if the Null is the rejection region, you reject the Null in favor of the alternative
+
+# Type 1 and Type 2 Errors
+# alpha & beta
+# power = 1 - beta
+
+# Exercise 28
+# Z-Test for mean, population variance known
+# Using the data from the lesson, test the null hypothesis at 10% significance
+
+# sample mean: $100,200
+# population sd: $15,000
+# standard error: $2,739
+# sample size: 30
+# z-score: -4.67 
+# H0 (Glassdoor data): $113,000
+# two-sided test
+
+sal <- read.csv("ztest-a.csv")
+summary(sal)
+
+z.test <- function(a, mu, sd){
+   zeta <- (mean(a) - mu) / (sd/sqrt(length(a)))
+   return(zeta)
+}
+
+z.test(a = sal$salary, mu = 113000, sd = 15000)
+
+# Z = 4.67
+# z = 1.65 (fromt the z-table)
+# alpha = 0.05 (two-sided test)
+
+# 4.67 > 1.65 
+# therefore, the null is rejected
+
+# P-value
+# you reject the Null hypothesis when the probability of obtaining your observed value is less than the alpha level you decided at the start of the test. 
+# recall the alpha level you select is also the chance of obtaining a Type 1 error.
+# So for example, you obtain a z-score of 2.58 and you decide to set your alpha to 0.05. When you calculate the probability you get p=0.0049. So you can reject the Null hypothesis
+# Almost all statistical tests calculate a p-value. p < a reject Null
+
+# Test for mean with unknown population variance
+# T-test
+# Email open rate. is Competitor vs Our Own, higher or lower?
+# H0: mean open <= 0.4
+# H1: mean open > 0.4
+# alpha: 0.05
+
+library(psych)
+open.rate <- read.csv("ttest-a.csv")
+
+my.t.test <- function(a, hmean){
+   t <- (mean(a) - hmean) / (sd(a)/sqrt(length(a)))
+   return(t)
+}
+
+my.t.test(open.rate$Open.rate, 0.4)
+d.f <- length(open.rate$Open.rate)-1
+# T = -0.5295018
+# d.f. = n-1 = 9
+# alpha: 0.05
+# T 0.53 < t 1.83 .:. cannot reject Null hypothesis.
+# p-value = 0.065
+# we cannot say Email Open rate of competitor is higher than 40%
+
+# Exercise 29
+# What if the question was: is the competitor open rate EXACTLY 40%. What would be the decision then?
+
+# 1. Test at 5% significance. Comment on the decision with the appropriate statistical jargon.
+# 2. Test at 1% significance. Comment on the decision with the appropriate statistical jargon.
+
+# Hint: Think about what type of test would be suitable here (one- or two-sided).
+
+library(psych)
+
+open.rate <- read.csv("ttest-a.csv") # load your data
+describe(open.rate) # understand your data
+
+my.t.test(open.rate$Open.rate, 0.4)
+
+# H0 = open rate is NOT 40%
+# H1 = open rate is 40%
+# The problem is a two-sided test
+# T = 0.53
+# t1 = 2.26 Accept the null. At the 5% significance level we cannot say that the competitor's open rate is 40%
+# t2 = 3.25 Accept the null. The test on that sample shows that at 1% significance, our competitor's open rate is not 40%.
+
+# Comparing Means - Dependent Samples
+# Before & After trials. Is the drug having an effect?
+# H0: There is no effect and weight is unchanged mean B >= mean A : mean.B - mean.A >= 0 : D0 >= 0
+# H1: There is an effect and weight goes down. mean B < mean A : mean.B - mean.A < 0 : D1 < 0 
+# n = 10, df = 9
+# one-sided t-test at alpha 0.05
+
+library(pastecs)
+library(psych)
+
+magn <- read.csv("dependent-samples.csv")
+
+# ALWAYS inspect your data to look for normality before submitting to z-test/t-test/ANOVA/MANOVA
+# Is it normally distributed?
+# are the variances across groups equal?
+describe(magn)
+# alternative stat.desc(magn)
+#        vars  n mean   sd median trimmed  mad min max range  skew kurtosis   se
+# Before    1 10 1.38 0.40   1.45    1.39 0.37 0.7 2.0   1.3 -0.19    -1.16 0.13
+# After     2 10 1.71 0.28   1.70    1.68 0.07 1.3 2.4   1.1  1.13     1.14 0.09
+# Skew is a measure of symmetry where skew = 0 means perfectly symmetrical
+# The normal distribution has a skew = 0
+# kurtosis is a measure of the combined sizes of the two tails, the amount of probability in the tails.
+# kurtosis is typical compared the kurtosis of the normal distribution = 3.
+# If kurtosis is greater than 3 than more probability in the tails
+# If kurtosis is less than 3 than there is less probability in the tails
+# Most often, kurtosis is measured against the normal distribution.  If the kurtosis is close to 0, then a normal distribution is often assumed.  These are called mesokurtic distributions.  If the kurtosis is less than zero, then the distribution is light tails and is called a platykurtic distribution.  If the kurtosis is greater than zero, then the distribution has heavier tails and is called a leptokurtic distribution
+
+# alternative paramter must be one of “two.sided”, “less”, “greater”
+# based on whether mean.B - mean.A is expected to be higher or lower than 0
+dep.t.test <- t.test(magn$Before, magn$After, paired = TRUE, alternative = "l")
+dep.t.test
+# t = -2.2949, df = 9, p-value = 0.0237, alpha = 0.01 (more conservative) fail to reject the Null
+# 
+
+# Exercise 30
+# A health guru on the internet designed a weight-loss program. 
+# You are wondering if it is working. You are given a sample of some people who did the program. 
+# You can find the data in kg if you prefer working with kg as a unit of measurement.
+
+# State the null hypothesis.
+# Calculate the appropriate statistic
+# Decide if this is a one-sided or a two-sided test. What is the p-value?
+# Based on the p-value, decide at 1%,5% and 10% significance, if the program is working. Comment using the appropriate statistical jargon.
+
+library(pastecs)
+library(psych)
+
+weight <- read.csv("weight-data-exercise-kg.csv")
+# Is it normal?
+# are the variances relatively equal?
+# is the sample size larger than 30?
+describe(weight)
+#        vars  n   mean    sd median trimmed  mad   min    max range  skew kurtosis   se
+# before    1 10 106.43 10.51 107.77  106.80 7.62 88.84 120.99 32.15 -0.29    -1.23 3.32
+# after     2 10 105.29 10.73 104.94  105.36 8.31 87.36 122.65 35.29 -0.17    -1.06 3.39
+# n=10 which means you can't use skew, kurtosis. but variances look good.
+
+# we are subtracting the means of after from before, and expect > 0, so use "g" in ttest
+dep.t.test <- t.test(weight$before, weight$after, paired = TRUE, alternative = "g")
+dep.t.test
+
+# H0: The difference between the before and the after conditions is less than or equal to 0
+# t = 2.01
+# The test is one-sided. We want to know if people are actually losing weight. p = 0.038
+# At 1% significance we accept the null hypothesis. The data shows that the program is not working.
+# At 5% significance, we reject the null hypothesis. Therefore, the program is successful.
+# At 10% significance, there is enoug statistical evidence that the program is working.
+
+# comparing two means - independent samples - unknown population variance
+
+grades <- read_csv("independent-samples.csv")
+# Engineering and Management are types of courses, not varaibles on their own
+# use gather to recode the data frame to a "course" variable and a "grade" variable
+grades <- gather(grades, Engineering, Management, 
+                 key = "course",
+                 value = "grades")
+
+# R uses Welch T-test when samples are different sizes
+# You can override Welch adjustment with "var.equal=TRUE" when variances are equal
+ind.t.test <- t.test(grades~course, data = grades, mu=-4)
+ind.t.test
+# t = -2.4332, df = 164.71, p-value = 0.01604
+# NB: when the t-score is negative, the true value of the difference is smaller than the hypothesized
+# value. In the example, a smaller value than -4 is a larger absolute number.
+
+# Linear Regression Model
+# A linear regression is a linear approximation of a causal relationship between two or more variables
+# y = B0 + B1x1 + E population parameters
+# y.hat = b0 + b1x1 - sample estimates
+
+# Correlation vs Regression
+# Correlation measures the degree of relationship, so can be stated in reverse. Is represented by a single point.
+# Regression analysis measures the effect of one variable on another variable, Cannot be stated reversed because the predictor variables causes some effect in the dependent variable. Is represented as the best fitting line in a set of data.
+
+# Geometrical Representation
+# 
+
+# 
+
+
+
+
+
